@@ -78,7 +78,7 @@ Si prefieres iniciarlo manualmente:
 
 ## 🔌 API Endpoints
 
-El backend expone una API en `http://localhost:8000`:
+El backend expone una API en `http://localhost:8001`:
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
