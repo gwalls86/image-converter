@@ -9,7 +9,7 @@ Una solución de escritorio elegante y potente para la conversión, redimensiona
 
 ---
 
-## 🎨 Identidad Visual
+## 🎨 Icono del Proyecto
 
 <p align="center">
   <img src="frontend/icon.png" width="160" alt="PDF Tool Icon">
