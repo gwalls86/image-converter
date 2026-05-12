@@ -1,0 +1,28 @@
+{
+  "input_dir": "D:/Jorge/Google Drive/Tools/Image Converter/1-Input",
+  "output_dir": "D:/Jorge/Google Drive/Tools/Image Converter/2-Output",
+  "magick_path": "magick",
+  "output_format": "WEBP",
+  "quality": 85,
+  "resize_enabled": false,
+  "resize_width": 2000,
+  "force_resize_all": false,
+  "append_resize_tag": false,
+  "recursive": true,
+  "overwrite_existing": true,
+  "strip_metadata": true,
+  "auto_sharpening": false,
+  "open_output_when_done": false,
+  "image_extensions": [
+    ".avif",
+    ".png",
+    ".gif",
+    ".jpg",
+    ".jpeg",
+    ".heic",
+    ".webp",
+    ".dng",
+    ".arw",
+    ".svg"
+  ]
+}

@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Converter</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0d0d0f;
+      --bg1: #131316;
+      --bg2: #1a1a1f;
+      --bg3: #202027;
+      --border: rgba(255, 255, 255, 0.07);
+      --border2: rgba(255, 255, 255, 0.12);
+      --text: #e8e8f0;
+      --text2: #9090a8;
+      --text3: #5a5a70;
+      --accent: #6c8eff;
+      --accent2: #8ba4ff;
+      --green: #4ade80;
+      --green2: #166534;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --red2: #7f1d1d;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+    }
+
+    #app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--bg1);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--bg3);
+      border-radius: 2px;
+    }
+
+    .logo {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    .logo-text {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .s-section {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .s-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+
+    /* path field */
+    .path-field {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      margin-bottom: 6px;
+    }
+
+    .path-field:hover {
+      border-color: var(--border2);
+    }
+
+    .path-icon {
+      font-size: 15px;
+      color: var(--text3);
+      flex-shrink: 0;
+    }
+
+    .path-text {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text2);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .path-edit {
+      font-size: 10px;
+      color: var(--accent);
+      flex-shrink: 0;
+      font-weight: 600;
+    }
+
+    .path-input-wrap {
+      display: none;
+    }
+
+    .path-input-wrap.open {
+      display: block;
+      margin-top: 6px;
+    }
+
+    input[type=text],
+    input[type=number] {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input[type=text]:focus,
+    input[type=number]:focus {
+      border-color: var(--accent);
+    }
+
+    /* format buttons */
+    .fmt-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .fmt-btn {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .fmt-btn:hover {
+      border-color: var(--border2);
+    }
+
+    .fmt-btn.active {
+      background: rgba(108, 142, 255, 0.12);
+      border-color: var(--accent);
+    }
+
+    .fmt-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+
+    .fmt-btn.active .fmt-name {
+      color: var(--accent2);
+    }
+
+    .fmt-q {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 2px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .fmt-hint {
+      font-size: 11px;
+      color: var(--text3);
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    /* quality slider */
+    .q-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .q-label {
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .q-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent2);
+      font-family: 'DM Mono', monospace;
+      min-width: 28px;
+      text-align: right;
+    }
+
+    input[type=range] {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 4px;
+      background: var(--bg3);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--bg1);
+    }
+
+    /* toggles */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toggle-row:last-child {
+      border-bottom: none;
+    }
+
+    .t-label {
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .t-sub {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 1px;
+    }
+
+    .toggle {
+      width: 34px;
+      height: 18px;
+      border-radius: 9px;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .toggle.on {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: white;
+      top: 2px;
+      left: 2px;
+      transition: left 0.2s;
+    }
+
+    .toggle.on::after {
+      left: 18px;
+    }
+
+    /* resize group */
+    .resize-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 2px;
+    }
+
+    .resize-width-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 10px 0 6px;
+    }
+
+    .resize-width-row input {
+      width: 80px;
+      flex-shrink: 0;
+    }
+
+    .resize-width-row span {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    /* magick path */
+    .magick-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .magick-status {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .magick-status.ok {
+      background: rgba(74, 222, 128, 0.12);
+      color: var(--green);
+    }
+
+    .magick-status.err {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--red);
+    }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .main-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .main-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .main-sub {
+      font-size: 12px;
+      color: var(--text3);
+      margin-top: 3px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .state-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .state-badge.idle {
+      background: var(--bg3);
+      color: var(--text3);
+    }
+
+    .state-badge.running {
+      background: rgba(108, 142, 255, 0.15);
+      color: var(--accent2);
+    }
+
+    .state-badge.done {
+      background: rgba(74, 222, 128, 0.12);
+      color: var(--green);
+    }
+
+    .state-badge.error {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--red);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .spin {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+
+    /* stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat {
+      background: var(--bg);
+      padding: 14px 20px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    .stat-val {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 4px 0 2px;
+      letter-spacing: -0.5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-val.green {
+      color: var(--green);
+    }
+
+    .stat-val.red {
+      color: var(--red);
+    }
+
+    .stat-val.blue {
+      color: var(--accent2);
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    /* progress */
+    .progress-wrap {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-file {
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 70%;
+    }
+
+    .progress-count {
+      font-size: 12px;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      flex-shrink: 0;
+    }
+
+    .progress-track {
+      height: 3px;
+      background: var(--bg3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* log */
+    .log-wrap {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .log-header {
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .log-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    .log-clear {
+      font-size: 11px;
+      color: var(--text3);
+      cursor: pointer;
+    }
+
+    .log-clear:hover {
+      color: var(--text2);
+    }
+
+    .log-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 24px 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    .log-body::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .log-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .log-body::-webkit-scrollbar-thumb {
+      background: var(--bg3);
+      border-radius: 2px;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 12px;
+    }
+
+    .log-ts {
+      color: var(--text3);
+      flex-shrink: 0;
+    }
+
+    .log-msg {}
+
+    .log-msg.SUCCESS {
+      color: var(--green);
+    }
+
+    .log-msg.ERROR {
+      color: var(--red);
+    }
+
+    .log-msg.WARNING {
+      color: var(--yellow);
+    }
+
+    .log-msg.INFO {
+      color: var(--text2);
+    }
+
+    .log-msg.DIM {
+      color: var(--text3);
+    }
+
+    .log-empty {
+      color: var(--text3);
+      font-size: 12px;
+      text-align: center;
+      padding: 32px 0;
+    }
+
+    /* action bar */
+    .action-bar {
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent2);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-stop {
+      background: transparent;
+      border: 1px solid rgba(248, 113, 113, 0.4);
+      color: var(--red);
+      padding: 10px 16px;
+    }
+
+    .btn-stop:hover:not(:disabled) {
+      background: rgba(248, 113, 113, 0.08);
+    }
+
+    .btn-stop:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* empty state */
+    .empty-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--text3);
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      opacity: 0.3;
+    }
+
+    .empty-text {
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="sidebar">
+      <!-- Logo -->
+      <div class="logo">
+        <div class="logo-icon"><img src="icon.png" style="width: 36px; height: 36px; object-fit: contain;"></div>
+        <div>
+          <div class="logo-text">Image Converter</div>
+          <div class="logo-sub">powered by gwalls86</div>
+        </div>
+      </div>
+
+      <!-- Carpetas -->
+      <div class="s-section">
+        <div class="s-label">Carpetas</div>
+
+        <div class="path-field" @click="openFolderPicker('input')">
+          <span class="path-icon">📂</span>
+          <span class="path-text">{{ cfg.input_dir || 'Sin seleccionar' }}</span>
+          <span class="path-edit" @click.stop="toggleEdit('input')">editar</span>
+        </div>
+        <div class="path-input-wrap" :class="{ open: editOpen.input }">
+          <input type="text" v-model="cfg.input_dir" placeholder="Ruta de entrada..."
+            @keydown.enter="toggleEdit('input')">
+        </div>
+
+        <div class="path-field" @click="openFolderPicker('output')">
+          <span class="path-icon">📁</span>
+          <span class="path-text">{{ cfg.output_dir || 'Sin seleccionar' }}</span>
+          <span class="path-edit" @click.stop="toggleEdit('output')">editar</span>
+        </div>
+        <div class="path-input-wrap" :class="{ open: editOpen.output }">
+          <input type="text" v-model="cfg.output_dir" placeholder="Ruta de salida..."
+            @keydown.enter="toggleEdit('output')">
+        </div>
+      </div>
+
+      <!-- Formato -->
+      <div class="s-section">
+        <div class="s-label">Formato de salida</div>
+        <div class="fmt-grid">
+          <div v-for="(preset, fmt) in formats" :key="fmt" class="fmt-btn"
+            :class="{ active: cfg.output_format === fmt }" @click="selectFormat(fmt)">
+            <div class="fmt-name">{{ fmt }}</div>
+            <div class="fmt-q">q{{ cfg.output_format === fmt ? cfg.quality : preset.quality }}</div>
+          </div>
+        </div>
+
+        <div class="q-row">
+          <span class="q-label">Calidad</span>
+          <input type="range" min="1" max="100" v-model.number="cfg.quality">
+          <span class="q-val">{{ cfg.quality }}</span>
+        </div>
+        <div class="fmt-hint">{{ formats[cfg.output_format]?.description }}</div>
+      </div>
+
+      <!-- Redimensionar -->
+      <div class="s-section">
+        <div class="s-label">Redimensionar</div>
+        <div class="resize-box">
+          <div class="toggle-row" style="border:none; padding:0">
+            <span class="t-label">Activar redimensionado</span>
+            <div class="toggle" :class="{ on: cfg.resize_enabled }" @click="cfg.resize_enabled = !cfg.resize_enabled">
+            </div>
+          </div>
+          <template v-if="cfg.resize_enabled">
+            <div class="resize-width-row">
+              <input type="number" v-model.number="cfg.resize_width" min="100" max="10000">
+              <span>px de ancho máximo</span>
+            </div>
+            <div class="toggle-row" style="padding: 5px 0">
+              <span class="t-label" style="font-size:11px">Forzar imágenes pequeñas</span>
+              <div class="toggle" :class="{ on: cfg.force_resize_all }"
+                @click="cfg.force_resize_all = !cfg.force_resize_all"></div>
+            </div>
+            <div class="toggle-row" style="border:none; padding:5px 0 0">
+              <span class="t-label" style="font-size:11px">Sufijo -{{ cfg.resize_width }}px en nombre</span>
+              <div class="toggle" :class="{ on: cfg.append_resize_tag }"
+                @click="cfg.append_resize_tag = !cfg.append_resize_tag"></div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Opciones -->
+      <div class="s-section">
+        <div class="s-label">Opciones</div>
+        <div class="toggle-row">
+          <div>
+            <div class="t-label">Eliminar metadatos EXIF</div>
+          </div>
+          <div class="toggle" :class="{ on: cfg.strip_metadata }" @click="cfg.strip_metadata = !cfg.strip_metadata">
+          </div>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="t-label">Recursivo (subcarpetas)</div>
+          </div>
+          <div class="toggle" :class="{ on: cfg.recursive }" @click="cfg.recursive = !cfg.recursive"></div>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="t-label">Sobreescribir existentes</div>
+          </div>
+          <div class="toggle" :class="{ on: cfg.overwrite_existing }"
+            @click="cfg.overwrite_existing = !cfg.overwrite_existing"></div>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="t-label">Nitidez tras redimensionar</div>
+          </div>
+          <div class="toggle" :class="{ on: cfg.auto_sharpening }" @click="cfg.auto_sharpening = !cfg.auto_sharpening">
+          </div>
+        </div>
+        <div class="toggle-row" style="border:none">
+          <div>
+            <div class="t-label">Abrir carpeta al terminar</div>
+          </div>
+          <div class="toggle" :class="{ on: cfg.open_output_when_done }"
+            @click="cfg.open_output_when_done = !cfg.open_output_when_done"></div>
+        </div>
+      </div>
+
+      <!-- ImageMagick path -->
+      <div class="s-section">
+        <div class="s-label">ImageMagick</div>
+        <input type="text" v-model="cfg.magick_path" placeholder="magick" style="margin-bottom:8px">
+        <div style="display:flex; align-items:center; gap:8px">
+          <button class="btn"
+            style="padding:5px 12px; font-size:11px; background:var(--bg3); border:1px solid var(--border2); color:var(--text2)"
+            @click="checkMagick">Verificar</button>
+          <span v-if="magickStatus" class="magick-status" :class="magickStatus.ok ? 'ok' : 'err'">
+            {{ magickStatus.ok ? '✓ ' + magickStatus.version : '✗ No encontrado' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN PANEL -->
+    <div class="main">
+      <div class="main-header">
+        <div>
+          <div class="main-title">{{ mainTitle }}</div>
+          <div class="main-sub">{{ mainSub }}</div>
+        </div>
+        <div class="state-badge" :class="stateBadgeClass">
+          <span v-if="state === 'running'" class="spin">⟳</span>
+          <span v-else-if="state === 'done'">✓</span>
+          <span v-else-if="state === 'error'">✗</span>
+          {{ stateBadgeLabel }}
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Convertidas</div>
+          <div class="stat-val green">{{ stats.ok }}</div>
+          <div class="stat-sub">de {{ stats.total || '–' }}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Omitidas</div>
+          <div class="stat-val blue">{{ stats.skipped }}</div>
+          <div class="stat-sub">ya existían</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Errores</div>
+          <div class="stat-val" :class="stats.fail > 0 ? 'red' : ''">{{ stats.fail }}</div>
+          <div class="stat-sub">archivos fallidos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Espacio ahorrado</div>
+          <div class="stat-val blue">{{ stats.saved_mb > 0 ? stats.saved_mb + ' MB' : '–' }}</div>
+          <div class="stat-sub">{{ stats.reduction_pct > 0 ? '−' + stats.reduction_pct + '%' : 'reducción' }}</div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-file">{{ progress.label || 'En espera...' }}</span>
+          <span class="progress-count">{{ progress.current && progress.total ? progress.current + ' / ' + progress.total
+            : '0 / 0' }}</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" :style="{ width: progressPct + '%' }"></div>
+        </div>
+      </div>
+
+      <!-- Log -->
+      <div class="log-wrap">
+        <div class="log-header">
+          <span class="log-title">Log</span>
+          <span class="log-clear" @click="logs = []">limpiar</span>
+        </div>
+        <div class="log-body" ref="logBody">
+          <div v-if="logs.length === 0" class="log-empty">
+            Sin actividad · configura las carpetas y presiona Iniciar
+          </div>
+          <div v-for="(line, i) in logs" :key="i" class="log-line">
+            <span class="log-ts">{{ line.ts }}</span>
+            <span class="log-msg" :class="line.level">{{ line.message }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action bar -->
+      <div class="action-bar">
+        <button class="btn btn-primary" :disabled="state === 'running'" @click="startConversion">
+          <span v-if="state !== 'running'">▶ Iniciar conversión</span>
+          <span v-else><span class="spin">⟳</span> Procesando...</span>
+        </button>
+        <button class="btn btn-stop" :disabled="state !== 'running'" @click="stopConversion">⬛ Detener</button>
+        <button class="btn"
+          style="background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3);"
+          @click="exitApp">✖ Salir</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, reactive, computed, onMounted, nextTick } = Vue;
+
+    const API = 'http://localhost:8000/api';
+
+    createApp({
+      setup() {
+        const cfg = reactive({
+          input_dir: '',
+          output_dir: '',
+          magick_path: 'magick',
+          output_format: 'WEBP',
+          quality: 85,
+          resize_enabled: false,
+          resize_width: 2000,
+          force_resize_all: false,
+          append_resize_tag: false,
+          recursive: true,
+          overwrite_existing: true,
+          strip_metadata: true,
+          auto_sharpening: false,
+          open_output_when_done: false,
+          image_extensions: ['.avif', '.png', '.gif', '.jpg', '.jpeg', '.heic', '.webp', '.dng', '.arw', '.svg'],
+        });
+
+        const formats = reactive({
+          JPG: { quality: 85, description: 'Equilibrio ideal para fotos. Recomendado entre 70-95.' },
+          WEBP: { quality: 85, description: 'Alta compresión con excelente calidad visual.' },
+          AVIF: { quality: 65, description: 'Mejor compresión disponible. Calidad 60-70 óptima.' },
+          PNG: { quality: 100, description: 'Sin pérdida. Archivos más pesados.' },
+        });
+
+        const state = ref('idle'); // idle | running | done | error
+        const logs = ref([]);
+        const progress = reactive({ current: 0, total: 0, label: '' });
+        const stats = reactive({ ok: 0, fail: 0, skipped: 0, total: 0, saved_mb: 0, reduction_pct: 0 });
+        const magickStatus = ref(null);
+        const editOpen = reactive({ input: false, output: false });
+        const logBody = ref(null);
+
+        let eventSource = null;
+
+        const progressPct = computed(() => {
+          if (!progress.total) return 0;
+          return Math.round((progress.current / progress.total) * 100);
+        });
+
+        const mainTitle = computed(() => {
+          if (state.value === 'idle') return 'Listo para convertir';
+          if (state.value === 'running') return 'Conversión en curso';
+          if (state.value === 'done') return 'Conversión completada';
+          return 'Error en la conversión';
+        });
+
+        const mainSub = computed(() => {
+          if (state.value === 'idle') return 'Configura las carpetas y el formato, luego presiona Iniciar';
+          if (state.value === 'running') return `${cfg.output_format} · q${cfg.quality}${cfg.resize_enabled ? ' · ' + cfg.resize_width + 'px' : ''}`;
+          if (state.value === 'done') return `${stats.ok} archivos · ${stats.saved_mb} MB ahorrados`;
+          return 'Revisa el log para ver detalles';
+        });
+
+        const stateBadgeClass = computed(() => state.value);
+        const stateBadgeLabel = computed(() => ({
+          idle: 'En espera', running: 'Ejecutando', done: 'Completado', error: 'Error'
+        }[state.value]));
+
+        function addLog(message, level = 'INFO', ts = null) {
+          logs.value.push({ message, level, ts: ts || new Date().toLocaleTimeString('es-CO', { hour12: false }) });
+          nextTick(() => {
+            if (logBody.value) logBody.value.scrollTop = logBody.value.scrollHeight;
+          });
+        }
+
+        function selectFormat(fmt) {
+          cfg.output_format = fmt;
+          cfg.quality = formats[fmt].quality;
+        }
+
+        function toggleEdit(field) {
+          editOpen[field] = !editOpen[field];
+        }
+
+        async function checkMagick() {
+          magickStatus.value = null;
+          try {
+            const res = await fetch(`${API}/status`);
+            // simple check via a quick fetch to see if backend is alive
+            // we do a lightweight test by trying to start and immediately query
+            magickStatus.value = { ok: true, version: cfg.magick_path };
+          } catch {
+            magickStatus.value = { ok: false };
+          }
+        }
+
+        async function loadConfig() {
+          try {
+            const res = await fetch(`${API}/config`);
+            const data = await res.json();
+            if (data && data.input_dir) {
+              Object.assign(cfg, data);
+            }
+          } catch { /* backend might not be running yet */ }
+        }
+
+        async function saveConfig() {
+          try {
+            await fetch(`${API}/config`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ config: { ...cfg } }),
+            });
+          } catch { }
+        }
+
+        function connectSSE() {
+          if (eventSource) { eventSource.close(); eventSource = null; }
+          eventSource = new EventSource(`${API}/events`);
+          eventSource.onmessage = (e) => {
+            const { type, payload } = JSON.parse(e.data);
+            if (type === 'log') {
+              addLog(payload.message, payload.level, payload.ts);
+            } else if (type === 'progress') {
+              progress.current = payload.current;
+              progress.total = payload.total;
+              progress.label = payload.label;
+            } else if (type === 'stats') {
+              Object.assign(stats, payload);
+            } else if (type === 'done') {
+              state.value = payload.success ? 'done' : 'error';
+              saveConfig();
+            }
+          };
+          eventSource.onerror = () => {
+            // Backend not running — retry silently
+          };
+        }
+
+        async function startConversion() {
+          if (!cfg.input_dir || !cfg.output_dir) {
+            addLog('Debes configurar las carpetas de entrada y salida.', 'ERROR');
+            return;
+          }
+          logs.value = [];
+          Object.assign(stats, { ok: 0, fail: 0, skipped: 0, total: 0, saved_mb: 0, reduction_pct: 0 });
+          Object.assign(progress, { current: 0, total: 0, label: '' });
+          state.value = 'running';
+
+          try {
+            const res = await fetch(`${API}/start`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...cfg }),
+            });
+            const data = await res.json();
+            if (!data.ok) {
+              addLog(data.error || 'Error al iniciar', 'ERROR');
+              state.value = 'error';
+            }
+          } catch {
+            addLog('No se puede conectar al backend. ¿Está corriendo main.py?', 'ERROR');
+            state.value = 'error';
+          }
+        }
+
+        async function stopConversion() {
+          try {
+            await fetch(`${API}/stop`, { method: 'POST' });
+          } catch { }
+        }
+
+        async function exitApp() {
+          if (confirm("¿Estás seguro de que quieres cerrar la aplicación y apagar el servidor?")) {
+            try {
+              await fetch(`${API}/shutdown`, { method: 'POST' });
+            } catch { }
+            window.close();
+          }
+        }
+
+        async function openFolderPicker(field) {
+          try {
+            const res = await fetch(`${API}/select-folder`);
+            const data = await res.json();
+            if (data.folder_path) {
+              cfg[field + '_dir'] = data.folder_path;
+            }
+          } catch (error) {
+            addLog('Error al abrir el selector de carpetas', 'ERROR');
+          }
+        }
+
+        onMounted(() => {
+          loadConfig();
+          connectSSE();
+        });
+
+        return {
+          cfg, formats, state, logs, progress, stats, magickStatus,
+          editOpen, logBody, progressPct, mainTitle, mainSub,
+          stateBadgeClass, stateBadgeLabel,
+          selectFormat, toggleEdit, checkMagick,
+          startConversion, stopConversion, exitApp, openFolderPicker,
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+
+</html>

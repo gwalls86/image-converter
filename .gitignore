@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+
+# Especifico del proyecto
+backend/image_converter_config.json
+ImageMagick-7.1.2-7-Q16-HDRI-x64-dll.exe
+1-input/
+2-output/
+
+# OS generated files
+.DS_Store
+Thumbs.db
