@@ -25,7 +25,7 @@ Image Converter 2.0/
 │   └── main.py          ← Servidor FastAPI
 ├── frontend/
 │   └── index.html       ← Interfaz de usuario (Vue 3)
-├── iniciar.bat          ← Script de inicio rápido
+├── start.bat            ← Script de inicio rápido
 └── ImageMagick-...exe   ← Instalador de ImageMagick (opcional)
 ```
 
@@ -63,7 +63,7 @@ Esta aplicación utiliza ImageMagick para el procesamiento pesado de imágenes.
 ## 🚀 Cómo Usar
 
 ### Opción A: Inicio Rápido (Recomendado)
-Simplemente haz doble clic en el archivo **`iniciar.bat`**. Esto hará dos cosas:
+Simplemente haz doble clic en el archivo **`start.bat`**. Esto hará dos cosas:
 1. Abrirá la interfaz web (`frontend/index.html`) en tu navegador predeterminado.
 2. Iniciará el servidor backend de Python.
 
