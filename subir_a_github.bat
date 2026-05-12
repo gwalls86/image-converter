@@ -22,8 +22,10 @@ git add .
 echo Creando commit...
 git commit -m "Initial commit - Web UI version"
 
+echo Renombrando rama local a main...
+git branch -M main
+
 echo Subiendo a GitHub (Forzado)...
-:: Intenta subir a master, si falla o prefieres main, puedes cambiarlo
 git push -u origin main --force
 
 echo.
