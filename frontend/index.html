@@ -56,7 +56,7 @@
 
     /* ── SIDEBAR ── */
     .sidebar {
-      width: 320px;
+      width: 360px;
       flex-shrink: 0;
       background: var(--bg1);
       border-right: 1px solid var(--border);
@@ -738,7 +738,7 @@
         <div class="logo-icon"><img src="icon.png" style="width: 36px; height: 36px; object-fit: contain;"></div>
         <div>
           <div class="logo-text">Image Converter</div>
-          <div class="logo-sub">powered by gwalls86</div>
+          <div class="logo-sub">Powered by gwalls86</div>
         </div>
       </div>
 
@@ -749,7 +749,7 @@
         <div class="path-field" @click="openFolderPicker('input')">
           <span class="path-icon">📂</span>
           <span class="path-text">{{ cfg.input_dir || 'Sin seleccionar' }}</span>
-          <span class="path-edit" @click.stop="toggleEdit('input')">editar</span>
+          <!-- <span class="path-edit" @click.stop="toggleEdit('input')">editar</span> -->
         </div>
         <div class="path-input-wrap" :class="{ open: editOpen.input }">
           <input type="text" v-model="cfg.input_dir" placeholder="Ruta de entrada..."
@@ -759,7 +759,7 @@
         <div class="path-field" @click="openFolderPicker('output')">
           <span class="path-icon">📁</span>
           <span class="path-text">{{ cfg.output_dir || 'Sin seleccionar' }}</span>
-          <span class="path-edit" @click.stop="toggleEdit('output')">editar</span>
+          <!-- <span class="path-edit" @click.stop="toggleEdit('output')">editar</span> -->
         </div>
         <div class="path-input-wrap" :class="{ open: editOpen.output }">
           <input type="text" v-model="cfg.output_dir" placeholder="Ruta de salida..."

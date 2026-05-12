@@ -1,6 +1,6 @@
 {
-  "input_dir": "D:/Jorge/Google Drive/Tools/Image Converter/1-Input",
-  "output_dir": "D:/Jorge/Google Drive/Tools/Image Converter/2-Output",
+  "input_dir": "D:/Jorge/Google Drive/Tools/Image Converter/1-input",
+  "output_dir": "D:/Jorge/Google Drive/Tools/Image Converter/2-output",
   "magick_path": "magick",
   "output_format": "WEBP",
   "quality": 85,
