@@ -20,7 +20,7 @@ Una solución de escritorio elegante y potente para la conversión, redimensiona
 ## 📁 Estructura del Proyecto
 
 ```
-Image Converter 2.0/
+Image Converter/
 ├── backend/
 │   └── main.py          ← Servidor FastAPI
 ├── frontend/
