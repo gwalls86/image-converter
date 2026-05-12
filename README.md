@@ -25,8 +25,7 @@ Image Converter 2.0/
 │   └── main.py          ← Servidor FastAPI
 ├── frontend/
 │   └── index.html       ← Interfaz de usuario (Vue 3)
-├── start.bat            ← Script de inicio rápido
-└── ImageMagick-...exe   ← Instalador de ImageMagick (opcional)
+└── start.bat            ← Script de inicio rápido
 ```
 
 ---
